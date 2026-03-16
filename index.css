@@ -1,0 +1,62 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Playfair Display", serif;
+}
+
+@layer base {
+  body {
+    @apply bg-black text-zinc-100 font-sans antialiased selection:bg-[#d4af37]/30;
+  }
+}
+
+@layer components {
+  .hardware-card {
+    @apply bg-[#0a0a0a] border border-[#d4af37]/20 rounded-2xl backdrop-blur-sm shadow-2xl shadow-black;
+  }
+  
+  .gold-glow {
+    @apply shadow-[0_0_20px_rgba(212,175,55,0.1)];
+  }
+  
+  .gold-border {
+    @apply border border-[#d4af37]/30 hover:border-[#d4af37] transition-all duration-300;
+  }
+
+  .gold-text {
+    @apply text-[#d4af37];
+  }
+
+  .gold-bg {
+    @apply bg-[#d4af37];
+  }
+
+  .gold-gradient {
+    background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #d4af37 100%);
+  }
+
+  .brutal-btn {
+    @apply bg-[#0a0a0a] border border-[#d4af37]/20 text-zinc-100 font-black uppercase italic tracking-tighter py-4 rounded-2xl hover:bg-[#d4af37] hover:text-black transition-all active:scale-95;
+  }
+}
+
+/* Custom scrollbar for gold theme */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4af3744;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}

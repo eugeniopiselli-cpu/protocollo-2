@@ -1,0 +1,65 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: userId (auth.uid)
+// Fields:
+//   - uid: string (required)
+//   - email: string (required)
+//   - displayName: string
+//   - photoURL: string
+//
+// Collection: workouts
+// Document ID: auto-generated
+// Fields:
+//   - userId: string (required, matches auth.uid)
+//   - sessionId: string (required)
+//   - sessionName: string (required)
+//   - date: timestamp (required)
+//   - exercises: list (required)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isValidUser(data) {
+      return data.uid is string && data.email is string;
+    }
+
+    function isValidWorkout(data) {
+      return data.userId == request.auth.uid &&
+             data.sessionId is string &&
+             data.sessionName is string &&
+             data.date is timestamp &&
+             data.exercises is list;
+    }
+
+    // Rules
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidUser(request.resource.data);
+    }
+
+    match /workouts/{workoutId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && isValidWorkout(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+  }
+}

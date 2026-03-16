@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Protocollo 2.0</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Protocollo 2.0">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="https://picsum.photos/seed/gym/180/180">
+    <link rel="manifest" href="/manifest.json">
+  </head>
+  <body>
+    <div id="root">
+      <div id="loading-screen" style="background: black; color: #d4af37; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; font-weight: 900; font-style: italic; text-align: center; padding: 20px;">
+        <div id="loading-text">CARICAMENTO...</div>
+        <div id="error-display" style="color: #ff4444; font-size: 12px; font-weight: normal; margin-top: 20px; max-width: 80%; word-break: break-all; font-family: monospace; display: none;"></div>
+      </div>
+    </div>
+    
+    <!-- Emergency Cleanup & Fallback -->
+    <script>
+      (function() {
+        // Catch global errors
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+          var display = document.getElementById('error-display');
+          var text = document.getElementById('loading-text');
+          if (display) {
+            display.style.display = 'block';
+            display.innerHTML = 'ERRORE: ' + msg + '<br>File: ' + url + '<br>Linea: ' + lineNo;
+            if (text) text.innerHTML = 'ERRORE DI CARICAMENTO';
+          }
+          return false;
+        };
+
+        // 1. Unregister all service workers immediately
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+              registration.unregister().then(function() {
+                console.log('SW unregistered');
+              });
+            }
+          });
+        }
+
+        // 2. Clear all caches
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            for (let name of names) caches.delete(name);
+          });
+        }
+
+        // 3. Fallback UI if app fails to mount
+        setTimeout(function() {
+          var root = document.getElementById('root');
+          if (root && root.innerHTML === '') {
+            root.innerHTML = `
+              <div style="background: black; color: white; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: sans-serif; text-align: center; padding: 20px;">
+                <h1 style="color: #d4af37;">PROTOCOLLO 2.0</h1>
+                <p style="color: #666; font-size: 14px;">L'app sta impiegando troppo tempo a caricare.</p>
+                <button onclick="localStorage.clear(); sessionStorage.clear(); location.reload();" style="background: #d4af37; color: black; border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; margin-top: 20px; cursor: pointer;">
+                  RIPRISTINA E RICARICA
+                </button>
+                <p style="color: #444; font-size: 10px; margin-top: 20px;">I tuoi dati sul database sono al sicuro.</p>
+              </div>
+            `;
+          }
+        }, 4000);
+      })();
+    </script>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
