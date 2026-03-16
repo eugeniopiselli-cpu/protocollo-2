@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22 # Usiamo la 22 per evitare avvisi di deprecazione
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
@@ -27,9 +27,8 @@ jobs:
 
       - name: Build
         run: |
-          # Ignoriamo ogni errore di TypeScript e forziamo il build
           export CI=false
-          npm run build || true
+          npm run build
         env:
           VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
